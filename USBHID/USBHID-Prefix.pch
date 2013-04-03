@@ -3,7 +3,9 @@
 //
 
 #ifdef __cplusplus
+    #include <MWorksCore/IODevice.h>
     #include <MWorksCore/Plugin.h>
+    #include <MWorksCore/StandardComponentFactory.h>
 #endif
 
 #ifdef __OBJC__
