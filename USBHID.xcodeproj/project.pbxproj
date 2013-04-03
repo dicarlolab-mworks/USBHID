@@ -1,0 +1,262 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E1A97C31170C847100E3FC03 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1A97C30170C847100E3FC03 /* CoreFoundation.framework */; };
+		E1A97C37170C847100E3FC03 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E1A97C35170C847100E3FC03 /* InfoPlist.strings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E1A97C2D170C847100E3FC03 /* USBHID.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = USBHID.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1A97C30170C847100E3FC03 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		E1A97C34170C847100E3FC03 /* USBHID-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "USBHID-Info.plist"; sourceTree = "<group>"; };
+		E1A97C36170C847100E3FC03 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E1A97C38170C847100E3FC03 /* USBHID-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "USBHID-Prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E1A97C2A170C847100E3FC03 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1A97C31170C847100E3FC03 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E1A97C24170C847100E3FC03 = {
+			isa = PBXGroup;
+			children = (
+				E1A97C32170C847100E3FC03 /* USBHID */,
+				E1A97C2F170C847100E3FC03 /* Frameworks */,
+				E1A97C2E170C847100E3FC03 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E1A97C2E170C847100E3FC03 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E1A97C2D170C847100E3FC03 /* USBHID.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E1A97C2F170C847100E3FC03 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E1A97C30170C847100E3FC03 /* CoreFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E1A97C32170C847100E3FC03 /* USBHID */ = {
+			isa = PBXGroup;
+			children = (
+				E1A97C33170C847100E3FC03 /* Supporting Files */,
+			);
+			path = USBHID;
+			sourceTree = "<group>";
+		};
+		E1A97C33170C847100E3FC03 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E1A97C34170C847100E3FC03 /* USBHID-Info.plist */,
+				E1A97C35170C847100E3FC03 /* InfoPlist.strings */,
+				E1A97C38170C847100E3FC03 /* USBHID-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E1A97C2C170C847100E3FC03 /* USBHID */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E1A97C3B170C847100E3FC03 /* Build configuration list for PBXNativeTarget "USBHID" */;
+			buildPhases = (
+				E1A97C29170C847100E3FC03 /* Sources */,
+				E1A97C2A170C847100E3FC03 /* Frameworks */,
+				E1A97C2B170C847100E3FC03 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = USBHID;
+			productName = USBHID;
+			productReference = E1A97C2D170C847100E3FC03 /* USBHID.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E1A97C25170C847100E3FC03 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "The MWorks Project";
+			};
+			buildConfigurationList = E1A97C28170C847100E3FC03 /* Build configuration list for PBXProject "USBHID" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E1A97C24170C847100E3FC03;
+			productRefGroup = E1A97C2E170C847100E3FC03 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E1A97C2C170C847100E3FC03 /* USBHID */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E1A97C2B170C847100E3FC03 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1A97C37170C847100E3FC03 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E1A97C29170C847100E3FC03 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		E1A97C35170C847100E3FC03 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E1A97C36170C847100E3FC03 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E1A97C39170C847100E3FC03 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E1A97C3A170C847100E3FC03 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E1A97C3C170C847100E3FC03 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "USBHID/USBHID-Prefix.pch";
+				INFOPLIST_FILE = "USBHID/USBHID-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		E1A97C3D170C847100E3FC03 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "USBHID/USBHID-Prefix.pch";
+				INFOPLIST_FILE = "USBHID/USBHID-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E1A97C28170C847100E3FC03 /* Build configuration list for PBXProject "USBHID" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E1A97C39170C847100E3FC03 /* Debug */,
+				E1A97C3A170C847100E3FC03 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E1A97C3B170C847100E3FC03 /* Build configuration list for PBXNativeTarget "USBHID" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E1A97C3C170C847100E3FC03 /* Debug */,
+				E1A97C3D170C847100E3FC03 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E1A97C25170C847100E3FC03 /* Project object */;
+}
