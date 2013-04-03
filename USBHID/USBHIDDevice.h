@@ -9,19 +9,7 @@
 #ifndef __USBHID__USBHIDDevice__
 #define __USBHID__USBHIDDevice__
 
-#include <boost/intrusive_ptr.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/type_traits/remove_pointer.hpp>
-
-
-inline void intrusive_ptr_add_ref(IOHIDManagerRef hidManager) {
-    CFRetain(hidManager);
-}
-
-
-inline void intrusive_ptr_release(IOHIDManagerRef hidManager) {
-    CFRelease(hidManager);
-}
+#include "CFTypeHelpers.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -30,13 +18,24 @@ BEGIN_NAMESPACE_MW
 class USBHIDDevice : public IODevice, boost::noncopyable {
     
 public:
+    static const std::string USAGE_PAGE;
+    static const std::string USAGE;
+    static const std::string LOG_ALL_INPUT_VALUES;
+    
     static void describeComponent(ComponentInfo &info);
     
     explicit USBHIDDevice(const ParameterValueMap &parameters);
     ~USBHIDDevice();
     
+    bool initialize() MW_OVERRIDE;
+    
 private:
-    boost::intrusive_ptr<boost::remove_pointer<IOHIDManagerRef>::type> hidManager;
+    CFDictionaryPtr createDeviceMatchingDictionary() const;
+    
+    const long usagePage;
+    const long usage;
+    const bool logAllInputValues;
+    const IOHIDManagerPtr hidManager;
     
 };
 
