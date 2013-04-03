@@ -2,7 +2,10 @@
 // Prefix header for all source files of the 'USBHID' target in the 'USBHID' project
 //
 
+#include <IOKit/hid/IOHIDLib.h>
+
 #ifdef __cplusplus
+    #include <MWorksCore/Exceptions.h>
     #include <MWorksCore/IODevice.h>
     #include <MWorksCore/Plugin.h>
     #include <MWorksCore/StandardComponentFactory.h>
