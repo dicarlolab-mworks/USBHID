@@ -37,9 +37,9 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
+    static CFDictionaryPtr createMatchingDictionary(long usagePage, long usage);
     static void inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value);
     
-    CFDictionaryPtr createDeviceMatchingDictionary() const;
     bool isRunning() const { return (runLoopThread.get_id() != boost::thread::id()); }
     void runLoop();
     void handleInputValue(IOHIDValueRef value);

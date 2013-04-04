@@ -56,9 +56,15 @@ void USBHIDDevice::addChild(std::map<std::string, std::string> parameters,
                             ComponentRegistryPtr reg,
                             boost::shared_ptr<Component> child)
 {
-    boost::shared_ptr<USBHIDInputChannel> channel = boost::dynamic_pointer_cast<USBHIDInputChannel>(child);
-    if (channel) {
-        inputChannels[std::make_pair(channel->getUsagePage(), channel->getUsage())] = channel;
+    boost::shared_ptr<USBHIDInputChannel> newInputChannel = boost::dynamic_pointer_cast<USBHIDInputChannel>(child);
+    if (newInputChannel) {
+        boost::shared_ptr<USBHIDInputChannel> &channel = inputChannels[std::make_pair(newInputChannel->getUsagePage(),
+                                                                                      newInputChannel->getUsage())];
+        if (channel) {
+            throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
+                                  "Cannot create more than one USBHID channel for a given usage page and usage");
+        }
+        channel = newInputChannel;
         return;
     }
     
@@ -67,13 +73,18 @@ void USBHIDDevice::addChild(std::map<std::string, std::string> parameters,
 
 
 bool USBHIDDevice::initialize() {
-    const CFDictionaryPtr matchingDictionary = createDeviceMatchingDictionary();
-    if (!matchingDictionary) {
+    if (inputChannels.empty() && !logAllInputValues) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
+                              "USBHID device must have at least one channel or have value logging enabled");
+    }
+    
+    const CFDictionaryPtr deviceMatchingDictionary = createMatchingDictionary(usagePage, usage);
+    if (!deviceMatchingDictionary) {
         merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to create HID device matching dictionary");
         return false;
     }
     
-    IOHIDManagerSetDeviceMatching(hidManager.get(), matchingDictionary.get());
+    IOHIDManagerSetDeviceMatching(hidManager.get(), deviceMatchingDictionary.get());
     
     const IOReturn status = IOHIDManagerOpen(hidManager.get(), kIOHIDOptionsTypeNone);
     if (status != kIOReturnSuccess) {
@@ -133,12 +144,7 @@ bool USBHIDDevice::stopDeviceIO() {
 }
 
 
-void USBHIDDevice::inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value) {
-    static_cast<USBHIDDevice *>(context)->handleInputValue(value);
-}
-
-
-CFDictionaryPtr USBHIDDevice::createDeviceMatchingDictionary() const {
+CFDictionaryPtr USBHIDDevice::createMatchingDictionary(long usagePage, long usage) {
     const CFNumberPtr usagePageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usagePage));
     const CFNumberPtr usageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usage));
     
@@ -156,6 +162,11 @@ CFDictionaryPtr USBHIDDevice::createDeviceMatchingDictionary() const {
                                           numValues,
                                           &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks));
+}
+
+
+void USBHIDDevice::inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value) {
+    static_cast<USBHIDDevice *>(context)->handleInputValue(value);
 }
 
 
