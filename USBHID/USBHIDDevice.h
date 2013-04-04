@@ -28,6 +28,10 @@ public:
     explicit USBHIDDevice(const ParameterValueMap &parameters);
     ~USBHIDDevice();
     
+    void addChild(std::map<std::string, std::string> parameters,
+                  ComponentRegistryPtr reg,
+                  boost::shared_ptr<Component> child) MW_OVERRIDE;
+    
     bool initialize() MW_OVERRIDE;
     bool startDeviceIO() MW_OVERRIDE;
     bool stopDeviceIO() MW_OVERRIDE;
@@ -43,6 +47,8 @@ private:
     const long usagePage;
     const long usage;
     const bool logAllInputValues;
+    
+    std::map< std::pair<long, long>, boost::shared_ptr<USBHIDInputChannel> > inputChannels;
     
     const IOHIDManagerPtr hidManager;
     IOHIDDeviceRef hidDevice;

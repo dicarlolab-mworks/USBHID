@@ -52,6 +52,20 @@ USBHIDDevice::~USBHIDDevice() {
 }
 
 
+void USBHIDDevice::addChild(std::map<std::string, std::string> parameters,
+                            ComponentRegistryPtr reg,
+                            boost::shared_ptr<Component> child)
+{
+    boost::shared_ptr<USBHIDInputChannel> channel = boost::dynamic_pointer_cast<USBHIDInputChannel>(child);
+    if (channel) {
+        inputChannels[std::make_pair(channel->getUsagePage(), channel->getUsage())] = channel;
+        return;
+    }
+    
+    throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid channel type for USBHID device");
+}
+
+
 bool USBHIDDevice::initialize() {
     const CFDictionaryPtr matchingDictionary = createDeviceMatchingDictionary();
     if (!matchingDictionary) {
@@ -167,6 +181,17 @@ void USBHIDDevice::handleInputValue(IOHIDValueRef value) {
     const uint32_t elementUsagePage = IOHIDElementGetUsagePage(element);
     const uint32_t elementUsage = IOHIDElementGetUsage(element);
     const CFIndex integerValue = IOHIDValueGetIntegerValue(value);
+    
+    const boost::shared_ptr<USBHIDInputChannel> &channel = inputChannels[std::make_pair(long(elementUsagePage),
+                                                                                        long(elementUsage))];
+    if (channel) {
+        // Convert OS absolute time stamp to nanoseconds, subtract MWorks base time, and convert to microseconds
+        MWTime valueTime = ((MWTime(AudioConvertHostTimeToNanos(IOHIDValueGetTimeStamp(value)))
+                                    - Clock::instance()->getSystemBaseTimeNS())
+                            / MWTime(1000));
+        
+        channel->postValue(integerValue, valueTime);
+    }
     
     if (logAllInputValues) {
         mprintf("HID input on device \"%s\":\n"

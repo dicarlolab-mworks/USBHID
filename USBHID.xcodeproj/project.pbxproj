@@ -42,6 +42,7 @@
 		E1A97C56170C8A7F00E3FC03 /* USBHIDDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1A97C54170C8A7F00E3FC03 /* USBHIDDevice.cpp */; };
 		E1A97C58170C900100E3FC03 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1A97C57170C900100E3FC03 /* IOKit.framework */; };
 		E1CD866C170DE75B00AD271B /* USBHIDInputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1CD866A170DE75B00AD271B /* USBHIDInputChannel.cpp */; };
+		E1CD866E170DF04400AD271B /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1CD866D170DF04400AD271B /* CoreAudio.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,7 @@
 		E1A97C5A170CB2DF00E3FC03 /* CFTypeHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFTypeHelpers.h; sourceTree = "<group>"; };
 		E1CD866A170DE75B00AD271B /* USBHIDInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = USBHIDInputChannel.cpp; sourceTree = "<group>"; };
 		E1CD866B170DE75B00AD271B /* USBHIDInputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USBHIDInputChannel.h; sourceTree = "<group>"; };
+		E1CD866D170DF04400AD271B /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1A97C45170C87B200E3FC03 /* MWorksCore.framework in Frameworks */,
+				E1CD866E170DF04400AD271B /* CoreAudio.framework in Frameworks */,
 				E1A97C31170C847100E3FC03 /* CoreFoundation.framework in Frameworks */,
 				E1A97C58170C900100E3FC03 /* IOKit.framework in Frameworks */,
 				E1A97C47170C887100E3FC03 /* libboost_system.a in Frameworks */,
@@ -131,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				E1A97C44170C87B200E3FC03 /* MWorksCore.framework */,
+				E1CD866D170DF04400AD271B /* CoreAudio.framework */,
 				E1A97C30170C847100E3FC03 /* CoreFoundation.framework */,
 				E1A97C57170C900100E3FC03 /* IOKit.framework */,
 			);

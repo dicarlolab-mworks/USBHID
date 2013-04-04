@@ -2,9 +2,12 @@
 // Prefix header for all source files of the 'USBHID' target in the 'USBHID' project
 //
 
+#include <CoreAudio/HostTime.h>
 #include <IOKit/hid/IOHIDLib.h>
 
 #ifdef __cplusplus
+    #include <map>
+    
     #include <boost/intrusive_ptr.hpp>
     #include <boost/noncopyable.hpp>
     #include <boost/scope_exit.hpp>
