@@ -169,10 +169,13 @@ void USBHIDDevice::handleInputValue(IOHIDValueRef value) {
     const CFIndex integerValue = IOHIDValueGetIntegerValue(value);
     
     if (logAllInputValues) {
-        mprintf("Input on \"%s\": usage page = %u, usage = %u, value = %ld",
+        mprintf("HID input on device \"%s\":\n"
+                "\tUsage page:\t%u\t(0x%02X)\n"
+                "\tUsage:\t\t%u\t(0x%02X)\n"
+                "\tValue:\t\t%ld",
                 getTag().c_str(),
-                elementUsagePage,
-                elementUsage,
+                elementUsagePage, elementUsagePage,
+                elementUsage, elementUsage,
                 integerValue);
     }
 }
