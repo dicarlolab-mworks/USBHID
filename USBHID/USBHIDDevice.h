@@ -10,6 +10,7 @@
 #define __USBHID__USBHIDDevice__
 
 #include "CFTypeHelpers.h"
+#include "USBHIDInputChannel.h"
 
 
 BEGIN_NAMESPACE_MW

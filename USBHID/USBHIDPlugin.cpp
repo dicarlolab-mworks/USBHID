@@ -15,6 +15,7 @@ BEGIN_NAMESPACE_MW
 class USBHIDPlugin : public Plugin {
     void registerComponents(boost::shared_ptr<ComponentRegistry> registry) MW_OVERRIDE {
         registry->registerFactory<StandardComponentFactory, USBHIDDevice>();
+        registry->registerFactory<StandardComponentFactory, USBHIDInputChannel>();
     }
 };
 
