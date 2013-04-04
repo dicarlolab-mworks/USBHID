@@ -83,7 +83,44 @@ bool USBHIDDevice::initialize() {
     CFSetGetValues(matchingDevices.get(), values);
     hidDevice = (IOHIDDeviceRef)(values[0]);
     
+    IOHIDDeviceRegisterInputValueCallback(hidDevice, &inputValueCallback, this);
+    
     return true;
+}
+
+
+bool USBHIDDevice::startDeviceIO() {
+    if (!isRunning()) {
+        try {
+            runLoopThread = boost::thread(boost::bind(&USBHIDDevice::runLoop,
+                                                      component_shared_from_this<USBHIDDevice>()));
+        } catch (const boost::thread_resource_error &e) {
+            merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to start HID device: %s", e.what());
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
+bool USBHIDDevice::stopDeviceIO() {
+    if (isRunning()) {
+        runLoopThread.interrupt();
+        try {
+            runLoopThread.join();
+        } catch (const boost::system::system_error &e) {
+            merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to stop HID device: %s", e.what());
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
+void USBHIDDevice::inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value) {
+    static_cast<USBHIDDevice *>(context)->handleInputValue(value);
 }
 
 
@@ -105,6 +142,39 @@ CFDictionaryPtr USBHIDDevice::createDeviceMatchingDictionary() const {
                                           numValues,
                                           &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks));
+}
+
+
+void USBHIDDevice::runLoop() {
+    IOHIDManagerScheduleWithRunLoop(hidManager.get(), CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    
+    BOOST_SCOPE_EXIT(&hidManager) {
+        IOHIDManagerUnscheduleFromRunLoop(hidManager.get(), CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    } BOOST_SCOPE_EXIT_END
+    
+    while (true) {
+        // Run the CFRunLoop for 500ms
+        (void)CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.5, false);
+        
+        // Give another thread a chance to terminate this one
+        boost::this_thread::interruption_point();
+    }
+}
+
+
+void USBHIDDevice::handleInputValue(IOHIDValueRef value) {
+    IOHIDElementRef element = IOHIDValueGetElement(value);
+    const uint32_t elementUsagePage = IOHIDElementGetUsagePage(element);
+    const uint32_t elementUsage = IOHIDElementGetUsage(element);
+    const CFIndex integerValue = IOHIDValueGetIntegerValue(value);
+    
+    if (logAllInputValues) {
+        mprintf("Input on \"%s\": usage page = %u, usage = %u, value = %ld",
+                getTag().c_str(),
+                elementUsagePage,
+                elementUsage,
+                integerValue);
+    }
 }
 
 

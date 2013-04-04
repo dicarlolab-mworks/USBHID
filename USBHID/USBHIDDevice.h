@@ -28,9 +28,16 @@ public:
     ~USBHIDDevice();
     
     bool initialize() MW_OVERRIDE;
+    bool startDeviceIO() MW_OVERRIDE;
+    bool stopDeviceIO() MW_OVERRIDE;
     
 private:
+    static void inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value);
+    
     CFDictionaryPtr createDeviceMatchingDictionary() const;
+    bool isRunning() const { return (runLoopThread.get_id() != boost::thread::id()); }
+    void runLoop();
+    void handleInputValue(IOHIDValueRef value);
     
     const long usagePage;
     const long usage;
@@ -38,6 +45,8 @@ private:
     
     const IOHIDManagerPtr hidManager;
     IOHIDDeviceRef hidDevice;
+    
+    boost::thread runLoopThread;
     
 };
 
