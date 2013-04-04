@@ -53,13 +53,13 @@ USBHIDDevice::~USBHIDDevice() {
 
 
 bool USBHIDDevice::initialize() {
-    CFDictionaryPtr matching = createDeviceMatchingDictionary();
-    if (!matching) {
-        merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to create device matching dictionary");
+    const CFDictionaryPtr matchingDictionary = createDeviceMatchingDictionary();
+    if (!matchingDictionary) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to create HID device matching dictionary");
         return false;
     }
     
-    IOHIDManagerSetDeviceMatching(hidManager.get(), matching.get());
+    IOHIDManagerSetDeviceMatching(hidManager.get(), matchingDictionary.get());
     
     const IOReturn status = IOHIDManagerOpen(hidManager.get(), kIOHIDOptionsTypeNone);
     if (status != kIOReturnSuccess) {
@@ -67,13 +67,29 @@ bool USBHIDDevice::initialize() {
         return false;
     }
     
+    const CFSetPtr matchingDevices = manageCFRef(IOHIDManagerCopyDevices(hidManager.get()));
+    if (!matchingDevices) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "No matching HID devices found");
+        return false;
+    }
+    
+    const CFIndex numMatchingDevices = CFSetGetCount(matchingDevices.get());
+    if (numMatchingDevices < 1) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "No matching HID devices found");
+        return false;
+    }
+    
+    const void *values[numMatchingDevices];
+    CFSetGetValues(matchingDevices.get(), values);
+    hidDevice = (IOHIDDeviceRef)(values[0]);
+    
     return true;
 }
 
 
 CFDictionaryPtr USBHIDDevice::createDeviceMatchingDictionary() const {
-    CFNumberPtr usagePageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usagePage));
-    CFNumberPtr usageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usage));
+    const CFNumberPtr usagePageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usagePage));
+    const CFNumberPtr usageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usage));
     
     if (!usagePageCFNumber || !usageCFNumber) {
         return CFDictionaryPtr();

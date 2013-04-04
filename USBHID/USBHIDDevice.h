@@ -35,7 +35,9 @@ private:
     const long usagePage;
     const long usage;
     const bool logAllInputValues;
+    
     const IOHIDManagerPtr hidManager;
+    IOHIDDeviceRef hidDevice;
     
 };
 
