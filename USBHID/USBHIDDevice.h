@@ -40,6 +40,7 @@ private:
     static CFDictionaryPtr createMatchingDictionary(long usagePage, long usage);
     static void inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value);
     
+    bool prepareInputChannels();
     bool isRunning() const { return (runLoopThread.get_id() != boost::thread::id()); }
     void runLoop();
     void handleInputValue(IOHIDValueRef value);
@@ -48,10 +49,15 @@ private:
     const long usage;
     const bool logAllInputValues;
     
-    std::map< std::pair<long, long>, boost::shared_ptr<USBHIDInputChannel> > inputChannels;
+    typedef std::pair<long, long> UsagePair;
+    typedef std::map< UsagePair, boost::shared_ptr<USBHIDInputChannel> > InputChannelMap;
+    InputChannelMap inputChannels;
     
     const IOHIDManagerPtr hidManager;
-    IOHIDDeviceRef hidDevice;
+    IOHIDDevicePtr hidDevice;
+    
+    typedef std::map< UsagePair, IOHIDElementPtr > HIDElementMap;
+    HIDElementMap hidElements;
     
     boost::thread runLoopThread;
     

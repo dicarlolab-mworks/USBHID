@@ -33,7 +33,7 @@ USBHIDDevice::USBHIDDevice(const ParameterValueMap &parameters) :
     usagePage(parameters[USAGE_PAGE]),
     usage(parameters[USAGE]),
     logAllInputValues(parameters[LOG_ALL_INPUT_VALUES]),
-    hidManager(manageCFRef(IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDManagerOptionNone)))
+    hidManager(IOHIDManagerPtr(IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDManagerOptionNone), CFObjectRef::owned))
 {
     if (usagePage <= kHIDPage_Undefined) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid HID usage page");
@@ -79,11 +79,6 @@ bool USBHIDDevice::initialize() {
     }
     
     const CFDictionaryPtr deviceMatchingDictionary = createMatchingDictionary(usagePage, usage);
-    if (!deviceMatchingDictionary) {
-        merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to create HID device matching dictionary");
-        return false;
-    }
-    
     IOHIDManagerSetDeviceMatching(hidManager.get(), deviceMatchingDictionary.get());
     
     const IOReturn status = IOHIDManagerOpen(hidManager.get(), kIOHIDOptionsTypeNone);
@@ -92,23 +87,22 @@ bool USBHIDDevice::initialize() {
         return false;
     }
     
-    const CFSetPtr matchingDevices = manageCFRef(IOHIDManagerCopyDevices(hidManager.get()));
-    if (!matchingDevices) {
-        merror(M_IODEVICE_MESSAGE_DOMAIN, "No matching HID devices found");
-        return false;
-    }
-    
-    const CFIndex numMatchingDevices = CFSetGetCount(matchingDevices.get());
-    if (numMatchingDevices < 1) {
+    const CFSetPtr matchingDevices = CFSetPtr(IOHIDManagerCopyDevices(hidManager.get()), CFObjectRef::owned);
+    const CFIndex numMatchingDevices = (matchingDevices ? CFSetGetCount(matchingDevices.get()) : 0);
+    if (!matchingDevices || (numMatchingDevices < 1)) {
         merror(M_IODEVICE_MESSAGE_DOMAIN, "No matching HID devices found");
         return false;
     }
     
     const void *values[numMatchingDevices];
     CFSetGetValues(matchingDevices.get(), values);
-    hidDevice = (IOHIDDeviceRef)(values[0]);
+    hidDevice = IOHIDDevicePtr((IOHIDDeviceRef)(values[0]), CFObjectRef::borrowed);
     
-    IOHIDDeviceRegisterInputValueCallback(hidDevice, &inputValueCallback, this);
+    if (!prepareInputChannels()) {
+        return false;
+    }
+    
+    IOHIDDeviceRegisterInputValueCallback(hidDevice.get(), &inputValueCallback, this);
     
     return true;
 }
@@ -145,28 +139,81 @@ bool USBHIDDevice::stopDeviceIO() {
 
 
 CFDictionaryPtr USBHIDDevice::createMatchingDictionary(long usagePage, long usage) {
-    const CFNumberPtr usagePageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usagePage));
-    const CFNumberPtr usageCFNumber = manageCFRef(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usage));
+    const CFNumberPtr usagePageCFNumber = CFNumberPtr(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usagePage),
+                                                      CFObjectRef::owned);
+    const CFNumberPtr usageCFNumber = CFNumberPtr(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usage),
+                                                  CFObjectRef::owned);
     
     if (!usagePageCFNumber || !usageCFNumber) {
-        return CFDictionaryPtr();
+        throw std::bad_alloc();
     }
     
     const CFIndex numValues = 2;
     const void *keys[numValues] = {CFSTR(kIOHIDDeviceUsagePageKey), CFSTR(kIOHIDDeviceUsageKey)};
     const void *values[numValues] = {usagePageCFNumber.get(), usageCFNumber.get()};
     
-    return manageCFRef(CFDictionaryCreate(kCFAllocatorDefault,
-                                          keys,
-                                          values,
-                                          numValues,
-                                          &kCFTypeDictionaryKeyCallBacks,
-                                          &kCFTypeDictionaryValueCallBacks));
+    CFDictionaryPtr matchingDictionary = CFDictionaryPtr(CFDictionaryCreate(kCFAllocatorDefault,
+                                                                            keys,
+                                                                            values,
+                                                                            numValues,
+                                                                            &kCFTypeDictionaryKeyCallBacks,
+                                                                            &kCFTypeDictionaryValueCallBacks),
+                                                         CFObjectRef::owned);
+    
+    if (!matchingDictionary) {
+        throw std::bad_alloc();
+    }
+    
+    return matchingDictionary;
 }
 
 
 void USBHIDDevice::inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value) {
     static_cast<USBHIDDevice *>(context)->handleInputValue(value);
+}
+
+
+bool USBHIDDevice::prepareInputChannels() {
+    std::vector<CFDictionaryPtr> matchingDicts;
+    std::vector<const void *> matchingArrayItems;
+    
+    BOOST_FOREACH(const InputChannelMap::value_type &value, inputChannels) {
+        const UsagePair &usagePair = value.first;
+        
+        const CFDictionaryPtr dict = createMatchingDictionary(usagePair.first, usagePair.second);
+        matchingDicts.push_back(dict);
+        matchingArrayItems.push_back(dict.get());
+        
+        CFArrayPtr matchingElements = CFArrayPtr(IOHIDDeviceCopyMatchingElements(hidDevice.get(),
+                                                                                 dict.get(),
+                                                                                 kIOHIDOptionsTypeNone),
+                                                 CFObjectRef::owned);
+        if (!matchingElements || (CFArrayGetCount(matchingElements.get()) < 1)) {
+            merror(M_IODEVICE_MESSAGE_DOMAIN,
+                   "No matching HID elements for usage page %ld, usage %ld",
+                   usagePair.first,
+                   usagePair.second);
+            return false;
+        }
+        
+        hidElements[usagePair] = IOHIDElementPtr((IOHIDElementRef)CFArrayGetValueAtIndex(matchingElements.get(), 0),
+                                                 CFObjectRef::borrowed);
+    }
+    
+    if (!logAllInputValues) {
+        CFArrayPtr inputValueMatchingArray = CFArrayPtr(CFArrayCreate(kCFAllocatorDefault,
+                                                                      &(matchingArrayItems.front()),
+                                                                      matchingArrayItems.size(),
+                                                                      &kCFTypeArrayCallBacks),
+                                                        CFObjectRef::owned);
+        if (!inputValueMatchingArray) {
+            throw std::bad_alloc();
+        }
+        
+        IOHIDDeviceSetInputValueMatchingMultiple(hidDevice.get(), inputValueMatchingArray.get());
+    }
+    
+    return true;
 }
 
 
