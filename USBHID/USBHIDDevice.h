@@ -37,10 +37,10 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
-    static CFDictionaryPtr createMatchingDictionary(const char *usagePageKey,
-                                                    long usagePage,
-                                                    const char *usageKey,
-                                                    long usage);
+    static cf::DictionaryPtr createMatchingDictionary(const char *usagePageKey,
+                                                      long usagePage,
+                                                      const char *usageKey,
+                                                      long usage);
     static void inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value);
     
     bool prepareInputChannels();
@@ -56,10 +56,10 @@ private:
     typedef std::map< UsagePair, boost::shared_ptr<USBHIDInputChannel> > InputChannelMap;
     InputChannelMap inputChannels;
     
-    const IOHIDManagerPtr hidManager;
-    IOHIDDevicePtr hidDevice;
+    const iohid::ManagerPtr hidManager;
+    iohid::DevicePtr hidDevice;
     
-    typedef std::map< UsagePair, IOHIDElementPtr > HIDElementMap;
+    typedef std::map< UsagePair, iohid::ElementPtr > HIDElementMap;
     HIDElementMap hidElements;
     
     boost::thread runLoopThread;
