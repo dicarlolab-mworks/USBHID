@@ -22,6 +22,9 @@ inline void intrusive_ptr_release(CFNumberRef ref) { CFRelease(ref); }
 inline void intrusive_ptr_add_ref(CFSetRef ref) { CFRetain (ref); }
 inline void intrusive_ptr_release(CFSetRef ref) { CFRelease(ref); }
 
+inline void intrusive_ptr_add_ref(CFStringRef ref) { CFRetain (ref); }
+inline void intrusive_ptr_release(CFStringRef ref) { CFRelease(ref); }
+
 inline void intrusive_ptr_add_ref(IOHIDDeviceRef ref) { CFRetain (ref); }
 inline void intrusive_ptr_release(IOHIDDeviceRef ref) { CFRelease(ref); }
 
@@ -51,6 +54,7 @@ typedef CFObjectPtr<CFArrayRef>::type CFArrayPtr;
 typedef CFObjectPtr<CFDictionaryRef>::type CFDictionaryPtr;
 typedef CFObjectPtr<CFNumberRef>::type CFNumberPtr;
 typedef CFObjectPtr<CFSetRef>::type CFSetPtr;
+typedef CFObjectPtr<CFStringRef>::type CFStringPtr;
 typedef CFObjectPtr<IOHIDDeviceRef>::type IOHIDDevicePtr;
 typedef CFObjectPtr<IOHIDElementRef>::type IOHIDElementPtr;
 typedef CFObjectPtr<IOHIDManagerRef>::type IOHIDManagerPtr;

@@ -37,7 +37,10 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
-    static CFDictionaryPtr createMatchingDictionary(long usagePage, long usage);
+    static CFDictionaryPtr createMatchingDictionary(const char *usagePageKey,
+                                                    long usagePage,
+                                                    const char *usageKey,
+                                                    long usage);
     static void inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value);
     
     bool prepareInputChannels();

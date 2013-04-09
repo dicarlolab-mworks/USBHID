@@ -78,7 +78,10 @@ bool USBHIDDevice::initialize() {
                               "USBHID device must have at least one channel or have value logging enabled");
     }
     
-    const CFDictionaryPtr deviceMatchingDictionary = createMatchingDictionary(usagePage, usage);
+    const CFDictionaryPtr deviceMatchingDictionary = createMatchingDictionary(kIOHIDDeviceUsagePageKey,
+                                                                              usagePage,
+                                                                              kIOHIDDeviceUsageKey,
+                                                                              usage);
     IOHIDManagerSetDeviceMatching(hidManager.get(), deviceMatchingDictionary.get());
     
     const IOReturn status = IOHIDManagerOpen(hidManager.get(), kIOHIDOptionsTypeNone);
@@ -110,6 +113,20 @@ bool USBHIDDevice::initialize() {
 
 bool USBHIDDevice::startDeviceIO() {
     if (!isRunning()) {
+        BOOST_FOREACH(const HIDElementMap::value_type &value, hidElements) {
+            IOHIDValueRef elementValue;
+            IOReturn status;
+            if (kIOReturnSuccess == (status = IOHIDDeviceGetValue(hidDevice.get(),
+                                                                  value.second.get(),
+                                                                  &elementValue)))
+            {
+                handleInputValue(elementValue);
+            } else {
+                merror(M_IODEVICE_MESSAGE_DOMAIN, "HID value get failed: %s", mach_error_string(status));
+                return false;
+            }
+        }
+        
         try {
             runLoopThread = boost::thread(boost::bind(&USBHIDDevice::runLoop,
                                                       component_shared_from_this<USBHIDDevice>()));
@@ -138,18 +155,33 @@ bool USBHIDDevice::stopDeviceIO() {
 }
 
 
-CFDictionaryPtr USBHIDDevice::createMatchingDictionary(long usagePage, long usage) {
+CFDictionaryPtr USBHIDDevice::createMatchingDictionary(const char *usagePageKey,
+                                                       long usagePage,
+                                                       const char *usageKey,
+                                                       long usage)
+{
+    const CFStringPtr usagePageKeyCFString = CFStringPtr(CFStringCreateWithCString(kCFAllocatorDefault,
+                                                                                   usagePageKey,
+                                                                                   kCFStringEncodingUTF8),
+                                                         CFObjectRef::owned);
+    
+    const CFStringPtr usageKeyCFString = CFStringPtr(CFStringCreateWithCString(kCFAllocatorDefault,
+                                                                               usageKey,
+                                                                               kCFStringEncodingUTF8),
+                                                     CFObjectRef::owned);
+    
     const CFNumberPtr usagePageCFNumber = CFNumberPtr(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usagePage),
                                                       CFObjectRef::owned);
+    
     const CFNumberPtr usageCFNumber = CFNumberPtr(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &usage),
                                                   CFObjectRef::owned);
     
-    if (!usagePageCFNumber || !usageCFNumber) {
+    if (!usagePageKeyCFString || !usageKeyCFString || !usagePageCFNumber || !usageCFNumber) {
         throw std::bad_alloc();
     }
     
     const CFIndex numValues = 2;
-    const void *keys[numValues] = {CFSTR(kIOHIDDeviceUsagePageKey), CFSTR(kIOHIDDeviceUsageKey)};
+    const void *keys[numValues] = {usagePageKeyCFString.get(), usageKeyCFString.get()};
     const void *values[numValues] = {usagePageCFNumber.get(), usageCFNumber.get()};
     
     CFDictionaryPtr matchingDictionary = CFDictionaryPtr(CFDictionaryCreate(kCFAllocatorDefault,
@@ -180,7 +212,10 @@ bool USBHIDDevice::prepareInputChannels() {
     BOOST_FOREACH(const InputChannelMap::value_type &value, inputChannels) {
         const UsagePair &usagePair = value.first;
         
-        const CFDictionaryPtr dict = createMatchingDictionary(usagePair.first, usagePair.second);
+        const CFDictionaryPtr dict = createMatchingDictionary(kIOHIDElementUsagePageKey,
+                                                              usagePair.first,
+                                                              kIOHIDElementUsageKey,
+                                                              usagePair.second);
         matchingDicts.push_back(dict);
         matchingArrayItems.push_back(dict.get());
         

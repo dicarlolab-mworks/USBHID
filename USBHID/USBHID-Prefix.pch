@@ -4,6 +4,7 @@
 
 #include <CoreAudio/HostTime.h>
 #include <IOKit/hid/IOHIDLib.h>
+#include <mach/mach_error.h>
 
 #ifdef __cplusplus
     #include <boost/foreach.hpp>
