@@ -117,7 +117,6 @@
 				E1A97C41170C85D700E3FC03 /* External Config */,
 				E1A97C32170C847100E3FC03 /* USBHID */,
 				E1A97C2F170C847100E3FC03 /* Frameworks & Libraries */,
-				E1A97C46170C887100E3FC03 /* libboost_system.a */,
 				E1A97C2E170C847100E3FC03 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -137,6 +136,7 @@
 				E1CD866D170DF04400AD271B /* CoreAudio.framework */,
 				E1A97C30170C847100E3FC03 /* CoreFoundation.framework */,
 				E1A97C57170C900100E3FC03 /* IOKit.framework */,
+				E1A97C46170C887100E3FC03 /* libboost_system.a */,
 			);
 			name = "Frameworks & Libraries";
 			sourceTree = "<group>";
