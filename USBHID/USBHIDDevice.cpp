@@ -208,15 +208,30 @@ bool USBHIDDevice::prepareInputChannels() {
         cf::ArrayPtr matchingElements = cf::ArrayPtr::owned(IOHIDDeviceCopyMatchingElements(hidDevice.get(),
                                                                                             dict.get(),
                                                                                             kIOHIDOptionsTypeNone));
-        if (!matchingElements || (CFArrayGetCount(matchingElements.get()) < 1)) {
+        bool foundMatch = false;
+        
+        if (matchingElements) {
+            const CFIndex matchingElementCount = CFArrayGetCount(matchingElements.get());
+            
+            for (CFIndex index = 0; index < matchingElementCount; index++) {
+                IOHIDElementRef element = (IOHIDElementRef)CFArrayGetValueAtIndex(matchingElements.get(), index);
+                IOHIDElementType elementType = IOHIDElementGetType(element);
+                
+                if ((elementType != kIOHIDElementTypeFeature) && (elementType != kIOHIDElementTypeCollection)) {
+                    hidElements[usagePair] = iohid::ElementPtr::borrowed(element);
+                    foundMatch = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!foundMatch) {
             merror(M_IODEVICE_MESSAGE_DOMAIN,
                    "No matching HID elements for usage page %ld, usage %ld",
                    usagePair.first,
                    usagePair.second);
             return false;
         }
-        
-        hidElements[usagePair] = iohid::ElementPtr::borrowed((IOHIDElementRef)CFArrayGetValueAtIndex(matchingElements.get(), 0));
     }
     
     if (!logAllInputValues) {
