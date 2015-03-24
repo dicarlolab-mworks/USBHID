@@ -14,6 +14,7 @@ BEGIN_NAMESPACE_MW
 
 const std::string USBHIDDevice::USAGE_PAGE("usage_page");
 const std::string USBHIDDevice::USAGE("usage");
+const std::string USBHIDDevice::PREFERRED_LOCATION_ID("preferred_location_id");
 const std::string USBHIDDevice::LOG_ALL_INPUT_VALUES("log_all_input_values");
 
 
@@ -24,6 +25,7 @@ void USBHIDDevice::describeComponent(ComponentInfo &info) {
     
     info.addParameter(USAGE_PAGE);
     info.addParameter(USAGE);
+    info.addParameter(PREFERRED_LOCATION_ID, "0");
     info.addParameter(LOG_ALL_INPUT_VALUES, "NO");
 }
 
@@ -32,6 +34,7 @@ USBHIDDevice::USBHIDDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
     usagePage(parameters[USAGE_PAGE]),
     usage(parameters[USAGE]),
+    preferredLocationID(long(parameters[PREFERRED_LOCATION_ID])),
     logAllInputValues(parameters[LOG_ALL_INPUT_VALUES]),
     hidManager(iohid::ManagerPtr::created(IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDManagerOptionNone)))
 {
@@ -75,9 +78,9 @@ bool USBHIDDevice::initialize() {
                               "USBHID device must have at least one channel or have value logging enabled");
     }
     
-    cf::DictionaryPtr deviceMatchingDictionary = createMatchingDictionary(kIOHIDDeviceUsagePageKey,
+    cf::DictionaryPtr deviceMatchingDictionary = createMatchingDictionary(CFSTR(kIOHIDDeviceUsagePageKey),
                                                                           usagePage,
-                                                                          kIOHIDDeviceUsageKey,
+                                                                          CFSTR(kIOHIDDeviceUsageKey),
                                                                           usage);
     IOHIDManagerSetDeviceMatching(hidManager.get(), deviceMatchingDictionary.get());
     
@@ -94,9 +97,74 @@ bool USBHIDDevice::initialize() {
         return false;
     }
     
-    const void *values[numMatchingDevices];
-    CFSetGetValues(matchingDevices.get(), values);
-    hidDevice = iohid::DevicePtr::borrowed((IOHIDDeviceRef)(values[0]));
+    std::vector<IOHIDDeviceRef> devices(numMatchingDevices);
+    CFSetGetValues(matchingDevices.get(), (const void **)(devices.data()));
+    
+    if (numMatchingDevices == 1) {
+        
+        hidDevice = iohid::DevicePtr::borrowed(devices[0]);
+        
+        if (preferredLocationID) {
+            CFNumberRef locationID = static_cast<CFNumberRef>(IOHIDDeviceGetProperty(hidDevice.get(), CFSTR(kIOHIDLocationIDKey)));
+            if (locationID) {
+                std::uint32_t value;
+                CFNumberGetValue(locationID, kCFNumberSInt32Type, &value);
+                if (preferredLocationID != value) {
+                    mwarning(M_IODEVICE_MESSAGE_DOMAIN,
+                             "Location ID for HID device \"%s\" (%lu) does not match preferred location ID (%lu)",
+                             getTag().c_str(),
+                             static_cast<unsigned long>(value),
+                             static_cast<unsigned long>(preferredLocationID));
+                }
+            }
+        }
+        
+    } else {
+        
+        std::ostringstream oss;
+        
+        oss << "Found multiple matching HID devices for \"" << getTag() << "\":\n";
+        
+        for (CFIndex deviceNum = 0; deviceNum < numMatchingDevices; deviceNum++) {
+            oss << "\nDevice #" << std::dec << deviceNum + 1 << std::endl;
+            
+            IOHIDDeviceRef device = devices[deviceNum];
+            std::vector<char> stringBuffer(1024);
+            
+            CFStringRef product = static_cast<CFStringRef>(IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey)));
+            if (product) {
+                CFStringGetCString(product, stringBuffer.data(), stringBuffer.size(), kCFStringEncodingUTF8);
+                oss << "\tProduct:\t\t" << stringBuffer.data() << std::endl;
+            }
+            
+            CFStringRef manufacturer = static_cast<CFStringRef>(IOHIDDeviceGetProperty(device, CFSTR(kIOHIDManufacturerKey)));
+            if (manufacturer) {
+                CFStringGetCString(manufacturer, stringBuffer.data(), stringBuffer.size(), kCFStringEncodingUTF8);
+                oss << "\tManufacturer:\t" << stringBuffer.data() << std::endl;
+            }
+            
+            CFNumberRef locationID = static_cast<CFNumberRef>(IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey)));
+            if (locationID) {
+                std::uint32_t value;
+                CFNumberGetValue(locationID, kCFNumberSInt32Type, &value);
+                
+                if (preferredLocationID == value) {
+                    hidDevice = iohid::DevicePtr::borrowed(device);
+                    break;
+                }
+                
+                oss << "\tLocation ID:\t" << std::dec << value << "\t(0x" << std::hex << value << ")" << std::endl;
+            }
+        }
+        
+        if (!hidDevice) {
+            oss << "\nPlease set the \"" << PREFERRED_LOCATION_ID
+                << "\" attribute to the Location ID of the desired device.\n";
+            merror(M_IODEVICE_MESSAGE_DOMAIN, "%s", oss.str().c_str());
+            return false;
+        }
+        
+    }
     
     if (!prepareInputChannels()) {
         return false;
@@ -152,19 +220,11 @@ bool USBHIDDevice::stopDeviceIO() {
 }
 
 
-cf::DictionaryPtr USBHIDDevice::createMatchingDictionary(const char *usagePageKeyValue,
+cf::DictionaryPtr USBHIDDevice::createMatchingDictionary(CFStringRef usagePageKey,
                                                          long usagePageValue,
-                                                         const char *usageKeyValue,
+                                                         CFStringRef usageKey,
                                                          long usageValue)
 {
-    cf::StringPtr usagePageKey = cf::StringPtr::created(CFStringCreateWithCString(kCFAllocatorDefault,
-                                                                                  usagePageKeyValue,
-                                                                                  kCFStringEncodingUTF8));
-    
-    cf::StringPtr usageKey = cf::StringPtr::created(CFStringCreateWithCString(kCFAllocatorDefault,
-                                                                              usageKeyValue,
-                                                                              kCFStringEncodingUTF8));
-    
     cf::NumberPtr usagePage = cf::NumberPtr::created(CFNumberCreate(kCFAllocatorDefault,
                                                                     kCFNumberLongType,
                                                                     &usagePageValue));
@@ -174,7 +234,7 @@ cf::DictionaryPtr USBHIDDevice::createMatchingDictionary(const char *usagePageKe
                                                                 &usageValue));
     
     const CFIndex numValues = 2;
-    const void *keys[numValues] = {usagePageKey.get(), usageKey.get()};
+    const void *keys[numValues] = {usagePageKey, usageKey};
     const void *values[numValues] = {usagePage.get(), usage.get()};
     
     return cf::DictionaryPtr::created(CFDictionaryCreate(kCFAllocatorDefault,
@@ -198,9 +258,9 @@ bool USBHIDDevice::prepareInputChannels() {
     BOOST_FOREACH(const InputChannelMap::value_type &value, inputChannels) {
         const UsagePair &usagePair = value.first;
         
-        cf::DictionaryPtr dict = createMatchingDictionary(kIOHIDElementUsagePageKey,
+        cf::DictionaryPtr dict = createMatchingDictionary(CFSTR(kIOHIDElementUsagePageKey),
                                                           usagePair.first,
-                                                          kIOHIDElementUsageKey,
+                                                          CFSTR(kIOHIDElementUsageKey),
                                                           usagePair.second);
         matchingDicts.push_back(dict);
         matchingArrayItems.push_back(dict.get());

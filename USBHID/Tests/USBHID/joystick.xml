@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <monkeyml version="1.0">
     <io_devices tag="IO Devices">
-        <iodevice type="usbhid_generic" tag="joystick" usage_page="1" usage="4" log_all_input_values="NO">
+        <iodevice type="usbhid_generic" tag="joystick" usage_page="1" usage="4" preferred_location_id="" log_all_input_values="NO">
             <iochannel type="usbhid_generic_input_channel" tag="button_A_channel" usage_page="9" usage="2" value="button_A"></iochannel>
             <iochannel type="usbhid_generic_input_channel" tag="button_B_channel" usage_page="9" usage="3" value="button_B"></iochannel>
             <iochannel type="usbhid_generic_input_channel" tag="button_X_channel" usage_page="9" usage="1" value="button_X"></iochannel>

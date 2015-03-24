@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <monkeyml version="1.0">
     <io_devices tag="IO Devices">
-        <iodevice type="usbhid_generic" tag="keyboard" usage_page="1" usage="6" log_all_input_values="NO">
+        <iodevice type="usbhid_generic" tag="keyboard" usage_page="1" usage="6" preferred_location_id="0" log_all_input_values="NO">
             <iochannel type="usbhid_generic_input_channel" tag="spacebar_channel" usage_page="7" usage="44" value="spacebar_pressed"></iochannel>
         </iodevice>
     </io_devices>

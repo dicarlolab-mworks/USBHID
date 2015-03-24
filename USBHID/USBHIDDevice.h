@@ -21,6 +21,7 @@ class USBHIDDevice : public IODevice, boost::noncopyable {
 public:
     static const std::string USAGE_PAGE;
     static const std::string USAGE;
+    static const std::string PREFERRED_LOCATION_ID;
     static const std::string LOG_ALL_INPUT_VALUES;
     
     static void describeComponent(ComponentInfo &info);
@@ -37,9 +38,9 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
-    static cf::DictionaryPtr createMatchingDictionary(const char *usagePageKey,
+    static cf::DictionaryPtr createMatchingDictionary(CFStringRef usagePageKey,
                                                       long usagePage,
-                                                      const char *usageKey,
+                                                      CFStringRef usageKey,
                                                       long usage);
     static void inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value);
     
@@ -50,6 +51,7 @@ private:
     
     const long usagePage;
     const long usage;
+    const std::uint32_t preferredLocationID;
     const bool logAllInputValues;
     
     typedef std::pair<long, long> UsagePair;

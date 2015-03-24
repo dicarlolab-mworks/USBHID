@@ -16,6 +16,7 @@ Interface to a USB human interface device (HID) class device
                 tag="USB HID Device"
                 usage_page=""
                 usage=""
+                preferred_location_id="0"
                 log_all_input_values="NO"
                 />
     </code>
