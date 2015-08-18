@@ -2,10 +2,6 @@
 // Prefix header for all source files of the 'USBHID' target in the 'USBHID' project
 //
 
-#include <CoreAudio/HostTime.h>
-#include <IOKit/hid/IOHIDLib.h>
-#include <mach/mach_error.h>
-
 #ifdef __cplusplus
     #include <boost/foreach.hpp>
     #include <boost/move/move.hpp>
@@ -17,3 +13,8 @@
     #include <MWorksCore/Plugin.h>
     #include <MWorksCore/StandardComponentFactory.h>
 #endif
+
+/* Include C headers *after* C++ ones to work around a bug in clang-503.0.40 (Xcode 5.1.1) */
+#include <CoreAudio/HostTime.h>
+#include <IOKit/hid/IOHIDLib.h>
+#include <mach/mach_error.h>
