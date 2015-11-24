@@ -46,6 +46,7 @@
 		E1A97C58170C900100E3FC03 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1A97C57170C900100E3FC03 /* IOKit.framework */; };
 		E1CD866C170DE75B00AD271B /* USBHIDInputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1CD866A170DE75B00AD271B /* USBHIDInputChannel.cpp */; };
 		E1CD866E170DF04400AD271B /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1CD866D170DF04400AD271B /* CoreAudio.framework */; };
+		E1E07EB31C04F52F008DD97E /* MWComponents.yaml in Resources */ = {isa = PBXBuildFile; fileRef = E1E07EB21C04F52F008DD97E /* MWComponents.yaml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +109,7 @@
 		E1CD866A170DE75B00AD271B /* USBHIDInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = USBHIDInputChannel.cpp; sourceTree = "<group>"; };
 		E1CD866B170DE75B00AD271B /* USBHIDInputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USBHIDInputChannel.h; sourceTree = "<group>"; };
 		E1CD866D170DF04400AD271B /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		E1E07EB21C04F52F008DD97E /* MWComponents.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWComponents.yaml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +187,7 @@
 				E1A97C34170C847100E3FC03 /* USBHID-Info.plist */,
 				E1A97C35170C847100E3FC03 /* InfoPlist.strings */,
 				E1A97C38170C847100E3FC03 /* USBHID-Prefix.pch */,
+				E1E07EB21C04F52F008DD97E /* MWComponents.yaml */,
 				E14E2D85191295F300534ABB /* MWLibrary.xml */,
 			);
 			name = "Supporting Files";
@@ -254,6 +257,7 @@
 			files = (
 				E1A97C37170C847100E3FC03 /* InfoPlist.strings in Resources */,
 				E14E2D86191295F300534ABB /* MWLibrary.xml in Resources */,
+				E1E07EB31C04F52F008DD97E /* MWComponents.yaml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
