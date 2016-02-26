@@ -13,6 +13,7 @@
     #include <boost/scope_exit.hpp>
     #include <boost/thread/thread.hpp>
     
+    #include <MWorksCore/CFObjectPtr.h>
     #include <MWorksCore/IODevice.h>
     #include <MWorksCore/Plugin.h>
     #include <MWorksCore/StandardComponentFactory.h>

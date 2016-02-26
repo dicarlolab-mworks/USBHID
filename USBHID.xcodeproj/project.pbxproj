@@ -105,7 +105,6 @@
 		E1A97C54170C8A7F00E3FC03 /* USBHIDDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = USBHIDDevice.cpp; sourceTree = "<group>"; };
 		E1A97C55170C8A7F00E3FC03 /* USBHIDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USBHIDDevice.h; sourceTree = "<group>"; };
 		E1A97C57170C900100E3FC03 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		E1A97C5A170CB2DF00E3FC03 /* CFTypeHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFTypeHelpers.h; sourceTree = "<group>"; };
 		E1CD866A170DE75B00AD271B /* USBHIDInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = USBHIDInputChannel.cpp; sourceTree = "<group>"; };
 		E1CD866B170DE75B00AD271B /* USBHIDInputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USBHIDInputChannel.h; sourceTree = "<group>"; };
 		E1CD866D170DF04400AD271B /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -169,7 +168,6 @@
 		E1A97C32170C847100E3FC03 /* USBHID */ = {
 			isa = PBXGroup;
 			children = (
-				E1A97C5A170CB2DF00E3FC03 /* CFTypeHelpers.h */,
 				E1CD866B170DE75B00AD271B /* USBHIDInputChannel.h */,
 				E1CD866A170DE75B00AD271B /* USBHIDInputChannel.cpp */,
 				E1A97C55170C8A7F00E3FC03 /* USBHIDDevice.h */,

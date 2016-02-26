@@ -9,11 +9,21 @@
 #ifndef __USBHID__USBHIDDevice__
 #define __USBHID__USBHIDDevice__
 
-#include "CFTypeHelpers.h"
 #include "USBHIDInputChannel.h"
 
 
 BEGIN_NAMESPACE_MW
+
+
+BEGIN_NAMESPACE(iohid)
+
+
+using DevicePtr = cf::ObjectPtr<IOHIDDeviceRef>;
+using ElementPtr = cf::ObjectPtr<IOHIDElementRef>;
+using ManagerPtr = cf::ObjectPtr<IOHIDManagerRef>;
+
+
+END_NAMESPACE(iohid)
 
 
 class USBHIDDevice : public IODevice, boost::noncopyable {
